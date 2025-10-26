@@ -1,0 +1,82 @@
+// Exercise 1.1 – Potentiometer Reading + LED Blinking
+
+// Board: Arduino MKR WiFi 1010 (3.3V logic)
+
+
+
+
+// === Pin setup ===
+
+const int ledPin = 6; // External LED on D6 (through 220Ω resistor to GND)
+
+// const int ledPin = LED_BUILTIN; // ← Uncomment this if you use the onboard LED instead
+
+const int potPin = A1; // Middle pin (wiper) of potentiometer
+
+
+
+
+void setup() {
+
+pinMode(ledPin, OUTPUT); // Configure LED pin as output
+
+Serial.begin(9600); // Start serial communication at 9600 baud
+
+while (!Serial); // Wait for Serial Monitor (important for MKR boards)
+
+Serial.println("Potentiometer + LED blink test started...");
+
+analogReadResolution(12);
+
+
+
+
+}
+
+
+
+
+void loop() {
+
+// --- Blink LED every 0.5 seconds ---
+
+digitalWrite(ledPin, HIGH); // Turn LED on
+
+delay(500);
+
+digitalWrite(ledPin, LOW); // Turn LED off
+
+delay(500);
+
+
+
+
+// --- Read potentiometer value ---
+
+int rawValue = analogRead(potPin); // 12-bit ADC → 0–4095
+
+float voltage = rawValue * (3.3 / 4095.0); // Convert to volts (0–3.3 V)
+
+
+
+
+// --- Print values to Serial Monitor ---
+
+Serial.print("Analog value: ");
+
+Serial.print(rawValue);
+
+Serial.print(" | Voltage: ");
+
+Serial.print(voltage, 3); // 3 decimal places
+
+Serial.println(" V");
+
+
+
+
+// --- Delay before next reading ---
+
+delay(1000); // Read once per second
+
+}
