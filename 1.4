@@ -1,0 +1,21 @@
+#include "sam.h"  // Direct access to SAMD21 registers
+
+#define LED_PIN_PORTB 10   // D4 → PB10 on MKR1010
+
+void setup() {
+  // Enable the APB clock for the PORT module
+  PM->APBBMASK.reg |= PM_APBBMASK_PORT;
+
+  // Configure PB10 (D4) as OUTPUT
+  PORT->Group[1].DIRSET.reg = (1 << LED_PIN_PORTB);
+}
+
+void loop() {
+  // Turn LED ON (set bit)
+  PORT->Group[1].OUTSET.reg = (1 << LED_PIN_PORTB);
+  delay(1000);
+
+  // Turn LED OFF (clear bit)
+  PORT->Group[1].OUTCLR.reg = (1 << LED_PIN_PORTB);
+  delay(1000);
+}
