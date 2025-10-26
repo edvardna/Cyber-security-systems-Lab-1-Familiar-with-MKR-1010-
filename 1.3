@@ -1,0 +1,92 @@
+// Exercise 1.3 - Basic Serial Calculator (Fully Working Version)
+// Board: Arduino MKR WiFi 1010 (SAMD21)
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial);
+  Serial.println("=== Simple Calculator ===");
+  Serial.println("Type: number operator number (e.g., 8 + 4)");
+  Serial.println("Then press ENTER");
+  Serial.println("-----------------------------------");
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    String input = Serial.readStringUntil('\n');
+    input.trim();  // Clean any extra whitespace or carriage returns
+
+    // Debugging: show what was received
+    Serial.print("Received: '");
+    Serial.print(input);
+    Serial.println("'");
+
+    // Find operator position
+    int opIndex = -1;
+    char op = 0;
+    const char ops[] = "+-*/";
+
+    for (int i = 0; i < (int)strlen(ops); i++) {
+      int idx = input.indexOf(ops[i]);
+      if (idx != -1) {
+        opIndex = idx;
+        op = ops[i];
+        break;
+      }
+    }
+
+    if (opIndex == -1) {
+      Serial.println("Error: No valid operator found! Use +, -, *, or /");
+      Serial.println("-----------------------------------");
+      Serial.println("Enter next operation:");
+      return;
+    }
+
+    // Split string into two parts (before and after operator)
+    String left = input.substring(0, opIndex);
+    String right = input.substring(opIndex + 1);
+
+    left.trim();
+    right.trim();
+
+    // Convert to numbers
+    float num1 = left.toFloat();
+    float num2 = right.toFloat();
+
+    // Check if numbers are valid
+    if (left.length() == 0 || right.length() == 0) {
+      Serial.println("Invalid input! Example: 8 + 4");
+      Serial.println("-----------------------------------");
+      Serial.println("Enter next operation:");
+      return;
+    }
+
+    // Perform calculation
+    float result;
+    bool valid = true;
+
+    switch (op) {
+      case '+': result = num1 + num2; break;
+      case '-': result = num1 - num2; break;
+      case '*': result = num1 * num2; break;
+      case '/':
+        if (num2 != 0) result = num1 / num2;
+        else {
+          Serial.println("Error: Division by zero!");
+          valid = false;
+        }
+        break;
+      default:
+        valid = false;
+        Serial.println("Error: Unknown operator!");
+        break;
+    }
+
+    if (valid) {
+      Serial.print("Result: ");
+      Serial.println(result, 4);
+    }
+
+    Serial.println("-----------------------------------");
+    Serial.println("Enter next operation:");
+  }
+}   // ✅ this closes the loop() function
